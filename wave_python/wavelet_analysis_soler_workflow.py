@@ -7,6 +7,36 @@ from matplotlib.gridspec import GridSpec
 import numpy as np
 from waveletFunctions import wave_signif, wavelet
 
+def gaussian(x, *params):
+    y = np.zeros_like(x)
+    for i in range(0, len(params), 3):
+        ctr = params[i]
+        amp = params[i+1]
+        wid = params[i+2] #sigma
+        y = y + np.abs(amp) * np.exp(-((x - ctr)/wid) ** 2)
+    return y
+
+def lorentzian(x, *params):
+    y = np.zeros_like(x)
+    for i in range(0, len(params), 3):
+        ctr = params[i]
+        amp = params[i + 1]
+        wid = params[i + 2]
+        y += np.abs(amp) * (wid ** 2) / ((x - ctr) ** 2 + wid ** 2)
+    return y
+
+def asymmetric_gaussian(x, *params):
+    y = np.zeros_like(x)
+    for i in range(0, len(params), 4):
+        ctr = params[i]
+        amp = params[i + 1]
+        wl = params[i + 2]
+        wr = params[i + 3]
+        y += np.abs(amp) * np.where(x < ctr,
+                                    np.exp(-((x - ctr) / wl) ** 2),
+                                    np.exp(-((x - ctr) / wr) ** 2))
+    return y
+
 def decompose_components(time, popt, model_name):
     """
     Given the fitted parameters and model name,
